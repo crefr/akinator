@@ -1,0 +1,11 @@
+animal
+    poltorashka
+        null
+        null
+    kvadrober
+        DED
+            null
+            null
+        neDED
+            null
+            null
