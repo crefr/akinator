@@ -12,10 +12,12 @@ int main()
     FILE * base_file = fopen("base.txt", "r");
     assert(base_file);
 
-    node_t * root = akinatorReadFromFile(base_file, NULL);
-    treeDumpGraph(root, akinatorPtrToStr);
+    akinator_t akinator = {};
+    akinatorCtor(&akinator, base_file);
 
-    akinatorTreeDtor(root);
+    treeDumpGraph(akinator.root, akinatorPtrToStr);
+
+    akinatorDtor(&akinator);
 
     fclose(base_file);
     logExit();

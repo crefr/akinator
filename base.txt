@@ -1,7 +1,15 @@
 animal
-    poltorashka
-        null
-        null
+    cat
+        poltorashka
+            null
+            null
+        fopf
+            enot
+                null
+                null
+            hz
+                null
+                null
     kvadrober
         DED
             null
