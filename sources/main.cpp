@@ -7,6 +7,7 @@
 
 int main()
 {
+    system("mkdir -p logs/");
     logStart("logs/log.html", LOG_DEBUG_PLUS, LOG_HTML);
     logCancelBuffer();
 
@@ -18,6 +19,11 @@ int main()
     akinatorCtor(&akinator, base_file);
 
     treeDumpGraph(akinator.root, akinatorPtrToStr);
+
+    akinatorPlay(&akinator);
+
+    treeDumpGraph(akinator.root, akinatorPtrToStr);
+
     akinatorDumpBaseToFile(&akinator, base_file_new);
 
     akinatorDtor(&akinator);
