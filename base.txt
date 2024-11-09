@@ -1,19 +1,51 @@
-animal
-    cat
-        poltorashka
-            null
-            null
-        fopf
-            enot
-                null
-                null
-            hz
-                null
-                null
-    kvadrober
-        DED
-            null
-            null
-        neDED
-            null
-            null
+"animal";
+	"gray";
+		"living in the forest";
+			"little";
+				"rabbit";
+					"_null";
+					"_null";
+				"wolf";
+					"_null";
+					"_null";
+			"barsik";
+				"_null";
+				"_null";
+		"eating the honey";
+			"bear";
+				"_null";
+				"_null";
+			"poltorashka";
+				"_null";
+				"_null";
+	"teaches computer science";
+		"not kvadrober";
+			"Hohlov";
+				"_null";
+				"_null";
+			"DED";
+				"_null";
+				"_null";
+		"teaches physics";
+			"woman";
+				"udalova";
+					"_null";
+					"_null";
+				"old";
+					"labnik/seminarist";
+						"verevockin";
+							"_null";
+							"_null";
+						"tormoz";
+							"holin";
+								"_null";
+								"_null";
+							"ovchos";
+								"_null";
+								"_null";
+					"koldunov";
+						"_null";
+						"_null";
+			"nothing";
+				"_null";
+				"_null";

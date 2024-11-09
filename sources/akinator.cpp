@@ -11,6 +11,7 @@ static void dumpTreeToFile(node_t * root_node, FILE * base_file, elemtostr_func_
 
 static bool answerIsYes();
 
+static void addNewElement(akinator_t * akinator);
 
 const size_t BUF_LEN = 128;
 
@@ -55,27 +56,7 @@ void akinatorPlay(akinator_t * akinator)
         printf(WINNING_PHRASE);
     else {
         printf(LOSING_PHRASE);
-        char new_elem_buf[BUF_LEN] = "";
-        scanf("%s", new_elem_buf);
-        printf(FORMAT_OF_DIFF_Q, new_elem_buf, (char *)(akinator->cur_node->data));
-
-        char new_question_buf[BUF_LEN] = "";
-        scanf("%s", new_question_buf);
-
-        node_t * new_question_node = newNode(new_question_buf, BUF_LEN * (sizeof(char)));
-        node_t * new_element_node  = newNode(new_elem_buf,     BUF_LEN * (sizeof(char)));
-
-        if (akinator->cur_node == akinator->cur_node->parent->left)
-            akinator->cur_node->parent->left = new_question_node;
-        else
-            akinator->cur_node->parent->right = new_question_node;
-
-        new_question_node->parent = akinator->cur_node->parent;
-        new_question_node->left   = new_element_node;
-        new_question_node->right  = akinator->cur_node;
-
-        akinator->cur_node->parent = new_question_node;
-        new_element_node->parent   = new_question_node;
+        addNewElement(akinator);
     }
     logPrint(LOG_DEBUG_PLUS, "ended playing akinator (root = %p, cur_node = %p)\n", akinator->root, akinator->cur_node);
 }
@@ -95,6 +76,36 @@ static bool answerIsYes()
     }
 }
 
+static void addNewElement(akinator_t * akinator)
+{
+    logPrint(LOG_DEBUG_PLUS, "akinator: adding new element into the tree\n");
+    char new_elem_buf[BUF_LEN] = "";
+    scanf(FORMAT_TO_READ_CONSOLE_STR, new_elem_buf);
+    logPrint(LOG_DEBUG_PLUS, "\tread %s\n", new_elem_buf);
+
+    printf(FORMAT_OF_DIFF_Q, new_elem_buf, (char *)(akinator->cur_node->data));
+
+    char new_question_buf[BUF_LEN] = "";
+    scanf(FORMAT_TO_READ_CONSOLE_STR, new_question_buf);
+    logPrint(LOG_DEBUG_PLUS, "\tdiff question %s\n", new_question_buf);
+
+    node_t * new_question_node = newNode(new_question_buf, BUF_LEN * (sizeof(char)));
+    node_t * new_element_node  = newNode(new_elem_buf,     BUF_LEN * (sizeof(char)));
+
+    if (akinator->cur_node == akinator->cur_node->parent->left)
+        akinator->cur_node->parent->left = new_question_node;
+    else
+        akinator->cur_node->parent->right = new_question_node;
+
+    new_question_node->parent = akinator->cur_node->parent;
+    new_question_node->left   = new_element_node;
+    new_question_node->right  = akinator->cur_node;
+
+    akinator->cur_node->parent = new_question_node;
+    new_element_node->parent   = new_question_node;
+    logPrint(LOG_DEBUG_PLUS, "akinator: added new element into the tree\n");
+}
+
 node_t * akinatorReadFromFile(FILE * base_file, node_t * parent)
 {
     assert(base_file);
@@ -103,7 +114,7 @@ node_t * akinatorReadFromFile(FILE * base_file, node_t * parent)
 
     fscanf(base_file, FORMAT_TO_READ_STR, buffer);
 
-    if (strcmp(buffer, "null") == 0){
+    if (strcmp(buffer, NULL_ELEMENT_STR) == 0){
         logPrint(LOG_DEBUG_PLUS, "\tno node (null)\n");
         return NULL;
     }
@@ -134,7 +145,7 @@ static void dumpTreeToFile(node_t * root_node, FILE * base_file, elemtostr_func_
     for(size_t tab = 0; tab < tab_nums; tab++)
         fputc('\t', base_file);
     if (root_node == NULL){
-        fprintf(base_file, "null\n");
+        fprintf(base_file, FORMAT_TO_WRITE_STR, NULL_ELEMENT_STR);
         return;
     }
     char str[BUF_LEN] = "";

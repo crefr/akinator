@@ -12,11 +12,9 @@ int main()
     logCancelBuffer();
 
     FILE * base_file = fopen("base.txt", "r");
-    FILE * base_file_new = fopen("base_new.txt", "w");
-    assert(base_file);
-
     akinator_t akinator = {};
     akinatorCtor(&akinator, base_file);
+    fclose(base_file);
 
     treeDumpGraph(akinator.root, akinatorPtrToStr);
 
@@ -24,11 +22,12 @@ int main()
 
     treeDumpGraph(akinator.root, akinatorPtrToStr);
 
-    akinatorDumpBaseToFile(&akinator, base_file_new);
+    base_file = fopen("base.txt", "w");
+    akinatorDumpBaseToFile(&akinator, base_file);
+    fclose(base_file);
 
     akinatorDtor(&akinator);
 
-    fclose(base_file);
     logExit();
     return 0;
 }
