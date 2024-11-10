@@ -2,12 +2,15 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <wchar.h>
+
+// #include <unistd.h>
 
 #include "akinator.h"
 #include "binTree.h"
 #include "logger.h"
 
-static void dumpTreeToFile(node_t * root_node, FILE * base_file, elemtostr_func_t dataToStr, size_t tab_nums);
+static void dumpTreeToFile(node_t * root_node, FILE * base_file, elemtowcs_func_t dataToStr, size_t tab_nums);
 
 static bool answerIsYes();
 
@@ -46,16 +49,16 @@ void akinatorPlay(akinator_t * akinator)
     bool last_answer = false;
     while (next_node != NULL){
         akinator->cur_node = next_node;
-        printf(FORMAT_OF_QUESTION, (char *)(akinator->cur_node->data));
+        wprintf(FORMAT_OF_QUESTION, (wchar_t *)(akinator->cur_node->data));
         if ((last_answer = answerIsYes()) == true)
             next_node = akinator->cur_node->left;
         else
             next_node = akinator->cur_node->right;
     }
     if (last_answer)
-        printf(WINNING_PHRASE);
+        wprintf(WINNING_PHRASE);
     else {
-        printf(LOSING_PHRASE);
+        wprintf(LOSING_PHRASE);
         addNewElement(akinator);
     }
     logPrint(LOG_DEBUG_PLUS, "ended playing akinator (root = %p, cur_node = %p)\n", akinator->root, akinator->cur_node);
@@ -64,13 +67,13 @@ void akinatorPlay(akinator_t * akinator)
 static bool answerIsYes()
 {
     while (1){
-        char ans_buf[BUF_LEN] = "";
-        scanf("%s", ans_buf);
+        wchar_t ans_buf[BUF_LEN] = L"";
+        wscanf(L"%s", ans_buf);
 
-        if (strcasecmp(ans_buf, YES_ANSWER) == 0){
+        if (wcscasecmp(ans_buf, YES_ANSWER) == 0){
             return true;
         }
-        if (strcasecmp(ans_buf, NO_ANSWER) == 0){
+        if (wcscasecmp(ans_buf, NO_ANSWER) == 0){
             return false;
         }
     }
@@ -79,18 +82,18 @@ static bool answerIsYes()
 static void addNewElement(akinator_t * akinator)
 {
     logPrint(LOG_DEBUG_PLUS, "akinator: adding new element into the tree\n");
-    char new_elem_buf[BUF_LEN] = "";
-    scanf(FORMAT_TO_READ_CONSOLE_STR, new_elem_buf);
+    wchar_t new_elem_buf[BUF_LEN] = L"";
+    wscanf(FORMAT_TO_READ_CONSOLE_STR, new_elem_buf);
     logPrint(LOG_DEBUG_PLUS, "\tread %s\n", new_elem_buf);
 
-    printf(FORMAT_OF_DIFF_Q, new_elem_buf, (char *)(akinator->cur_node->data));
+    wprintf(FORMAT_OF_DIFF_Q, new_elem_buf, (wchar_t *)(akinator->cur_node->data));
 
-    char new_question_buf[BUF_LEN] = "";
-    scanf(FORMAT_TO_READ_CONSOLE_STR, new_question_buf);
+    wchar_t new_question_buf[BUF_LEN] = L"";
+    wscanf(FORMAT_TO_READ_CONSOLE_STR, new_question_buf);
     logPrint(LOG_DEBUG_PLUS, "\tdiff question %s\n", new_question_buf);
 
-    node_t * new_question_node = newNode(new_question_buf, BUF_LEN * (sizeof(char)));
-    node_t * new_element_node  = newNode(new_elem_buf,     BUF_LEN * (sizeof(char)));
+    node_t * new_question_node = newNode(new_question_buf, BUF_LEN * (sizeof(wchar_t)));
+    node_t * new_element_node  = newNode(new_elem_buf,     BUF_LEN * (sizeof(wchar_t)));
 
     if (akinator->cur_node == akinator->cur_node->parent->left)
         akinator->cur_node->parent->left = new_question_node;
@@ -110,15 +113,18 @@ node_t * akinatorReadFromFile(FILE * base_file, node_t * parent)
 {
     assert(base_file);
     logPrint(LOG_DEBUG_PLUS, "akinator: reading token (parent = %p)\n", parent);
-    char buffer[BUF_LEN] = "";
+    wchar_t buffer[BUF_LEN] = L"";
 
-    fscanf(base_file, FORMAT_TO_READ_STR, buffer);
+    fwscanf(base_file, FORMAT_TO_READ_STR, buffer);
+    // wprintf(L"%ls\n", buffer);
+    // wprintf(L"%ls\n", NULL_ELEMENT_STR);
+    // sleep(1);
 
-    if (strcmp(buffer, NULL_ELEMENT_STR) == 0){
+    if (wcscmp(buffer, NULL_ELEMENT_STR) == 0){
         logPrint(LOG_DEBUG_PLUS, "\tno node (null)\n");
         return NULL;
     }
-    node_t * node = newNode(buffer, sizeof(char) * BUF_LEN);
+    node_t * node = newNode(buffer, sizeof(wchar_t) * BUF_LEN);
     node->parent = parent;
     logPrint(LOG_DEBUG_PLUS, "\tadded node %p (str = \"%s\")\n", node, buffer);
 
@@ -138,25 +144,25 @@ void akinatorDumpBaseToFile(akinator_t * akinator, FILE * base_file)
     logPrint(LOG_DEBUG_PLUS, "akinator: dumped to file\n");
 }
 
-static void dumpTreeToFile(node_t * root_node, FILE * base_file, elemtostr_func_t dataToStr, size_t tab_nums)
+static void dumpTreeToFile(node_t * root_node, FILE * base_file, elemtowcs_func_t dataToStr, size_t tab_nums)
 {
     assert(base_file);
     assert(dataToStr != NULL);
     for(size_t tab = 0; tab < tab_nums; tab++)
-        fputc('\t', base_file);
+        fwprintf(base_file, L"\t");
     if (root_node == NULL){
-        fprintf(base_file, FORMAT_TO_WRITE_STR, NULL_ELEMENT_STR);
+        fwprintf(base_file, FORMAT_TO_WRITE_STR, NULL_ELEMENT_STR);
         return;
     }
-    char str[BUF_LEN] = "";
-    dataToStr(str, root_node->data);
-    fprintf(base_file, FORMAT_TO_WRITE_STR, str);
+    wchar_t str[BUF_LEN] = L"";
+    dataToStr((wchar_t *)str, root_node->data);
+    fwprintf(base_file, FORMAT_TO_WRITE_STR, str);
     dumpTreeToFile(root_node->left , base_file, dataToStr, tab_nums + 1);
     dumpTreeToFile(root_node->right, base_file, dataToStr, tab_nums + 1);
 }
 
-void akinatorPtrToStr(char * str, void * str_ptr)
+void akinatorPtrToStr(wchar_t * str, void * str_ptr)
 {
-    char * akin_str = (char *) str_ptr;
-    strcpy(str, akin_str);
+    wchar_t * akin_str = (wchar_t *) str_ptr;
+    wcscpy(str, akin_str);
 }

@@ -1,6 +1,8 @@
 #ifndef AKINATOR_INCLUDED
 #define AKINATOR_INCLUDED
 
+#include <wchar.h>
+
 #include "bintree.h"
 
 /// @brief akinator structure itself
@@ -8,7 +10,7 @@ typedef struct
 {
     node_t * root;
     node_t * cur_node;
-    elemtostr_func_t dataToStr;
+    elemtowcs_func_t dataToStr;
 } akinator_t;
 
 /// @brief constructs akinator structure
@@ -27,20 +29,20 @@ node_t * akinatorReadFromFile(FILE * base_file, node_t * parent);
 void akinatorDumpBaseToFile(akinator_t * akinator, FILE * base_file);
 
 /// @brief function to print strings from tree right
-void akinatorPtrToStr(char * str, void * str_ptr);
+void akinatorPtrToStr(wchar_t * str, void * str_ptr);
 
-const char * const FORMAT_TO_READ_STR           = " %*[\";] %[^\"] %*[\";] ";
-const char * const FORMAT_TO_WRITE_STR          = "\"%s\";\n";
-const char * const NULL_ELEMENT_STR             = "_null";
-const char * const FORMAT_TO_READ_CONSOLE_STR   = " %[^\n]";
+const wchar_t * const FORMAT_TO_READ_STR           = L" %*[\";] %l[^\"] %*[\";] ";
+const wchar_t * const FORMAT_TO_WRITE_STR          = L"\"%ls\";\n";
+const wchar_t * const NULL_ELEMENT_STR             = L"_null";
+const wchar_t * const FORMAT_TO_READ_CONSOLE_STR   = L" %[^\n]";
 
 
-const char * const FORMAT_OF_QUESTION = "Is it %s? (Y/N)\n";
-const char * const WINNING_PHRASE     = "Oh, I guessed it again!\n";
-const char * const LOSING_PHRASE      = "Please type the object you guessed\n";
-const char * const FORMAT_OF_DIFF_Q   = "How is %s, differ from %s. It is ...\n";
+const wchar_t * const FORMAT_OF_QUESTION = L"Is it %ls? (Y/N)\n";
+const wchar_t * const WINNING_PHRASE     = L"Oh, I guessed it again!\n";
+const wchar_t * const LOSING_PHRASE      = L"Please type the object you guessed\n";
+const wchar_t * const FORMAT_OF_DIFF_Q   = L"How is %ls, differ from %ls. It is ...\n";
 
-const char * const YES_ANSWER = "Y";
-const char * const  NO_ANSWER = "N";
+const wchar_t * const YES_ANSWER = L"Y";
+const wchar_t * const  NO_ANSWER = L"N";
 
 #endif
