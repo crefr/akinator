@@ -113,25 +113,25 @@ node_t * akinatorReadFromFile(FILE * base_file, node_t * parent)
 {
     assert(base_file);
     logPrint(LOG_DEBUG_PLUS, "akinator: reading token (parent = %p)\n", parent);
-    wchar_t buffer[BUF_LEN] = L"";
+    wchar_t      buffer[BUF_LEN] = L"";
+    wchar_t type_buffer[BUF_LEN] = L"";
 
-    fwscanf(base_file, FORMAT_TO_READ_STR, buffer);
-    // wprintf(L"%ls\n", buffer);
-    // wprintf(L"%ls\n", NULL_ELEMENT_STR);
-    // sleep(1);
+    fwscanf(base_file, FORMAT_TO_READ_STR, buffer, type_buffer);
 
-    if (wcscmp(buffer, NULL_ELEMENT_STR) == 0){
-        logPrint(LOG_DEBUG_PLUS, "\tno node (null)\n");
-        return NULL;
-    }
+    // if (wcscmp(type_buffer, END_OF_ANSWER) == 0){
+    //     logPrint(LOG_DEBUG_PLUS, "\tno node (null)\n");
+    //     return NULL;
+    // }
     node_t * node = newNode(buffer, sizeof(wchar_t) * BUF_LEN);
     node->parent = parent;
     logPrint(LOG_DEBUG_PLUS, "\tadded node %p (str = \"%s\")\n", node, buffer);
 
-    logPrint(LOG_DEBUG_PLUS, "\tadding left node to %p (str = \"%s\")...\n", node, buffer);
-    node->left  = akinatorReadFromFile(base_file, node);
-    logPrint(LOG_DEBUG_PLUS, "\tadding right node to %p (str = \"%s\")...\n", node, buffer);
-    node->right = akinatorReadFromFile(base_file, node);
+    if (wcscmp(type_buffer, END_OF_QUESTION) == 0){
+        logPrint(LOG_DEBUG_PLUS, "\tadding left node to %p (str = \"%s\")...\n", node, buffer);
+        node->left  = akinatorReadFromFile(base_file, node);
+        logPrint(LOG_DEBUG_PLUS, "\tadding right node to %p (str = \"%s\")...\n", node, buffer);
+        node->right = akinatorReadFromFile(base_file, node);
+    }
     return node;
 }
 
@@ -150,15 +150,21 @@ static void dumpTreeToFile(node_t * root_node, FILE * base_file, elemtowcs_func_
     assert(dataToStr != NULL);
     for(size_t tab = 0; tab < tab_nums; tab++)
         fwprintf(base_file, L"\t");
-    if (root_node == NULL){
-        fwprintf(base_file, FORMAT_TO_WRITE_STR, NULL_ELEMENT_STR);
-        return;
-    }
+    // if (root_node == NULL){
+    //     fwprintf(base_file, FORMAT_TO_WRITE_STR, L"", END_OF_ANSWER);
+    //     return;
+    // }
     wchar_t str[BUF_LEN] = L"";
     dataToStr((wchar_t *)str, root_node->data);
-    fwprintf(base_file, FORMAT_TO_WRITE_STR, str);
-    dumpTreeToFile(root_node->left , base_file, dataToStr, tab_nums + 1);
-    dumpTreeToFile(root_node->right, base_file, dataToStr, tab_nums + 1);
+    if (root_node->left != NULL || root_node->right != NULL)
+        fwprintf(base_file, FORMAT_TO_WRITE_STR, str, END_OF_QUESTION);
+    else
+        fwprintf(base_file, FORMAT_TO_WRITE_STR, str, END_OF_ANSWER);
+
+    if (root_node->left != NULL)
+        dumpTreeToFile(root_node->left , base_file, dataToStr, tab_nums + 1);
+    if (root_node->right != NULL)
+        dumpTreeToFile(root_node->right, base_file, dataToStr, tab_nums + 1);
 }
 
 void akinatorPtrToStr(wchar_t * str, void * str_ptr)
