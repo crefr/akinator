@@ -22,7 +22,9 @@ int main()
 
     treeDumpGraphWcs(akinator.root, akinatorPtrToStr);
 
-    akinatorPlay(&akinator);
+    akinatorGiveDefinition(&akinator, L"хохлов");
+
+    // akinatorPlay(&akinator);
 
     treeDumpGraphWcs(akinator.root, akinatorPtrToStr);
 

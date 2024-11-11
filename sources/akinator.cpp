@@ -167,8 +167,65 @@ static void dumpTreeToFile(node_t * root_node, FILE * base_file, elemtowcs_func_
         dumpTreeToFile(root_node->right, base_file, dataToStr, tab_nums + 1);
 }
 
+void akinatorGiveDefinition(akinator_t * akinator, wchar_t * sample)
+{
+    assert(akinator);
+    assert(akinator->root);
+    assert(sample);
+    logPrint(LOG_DEBUG_PLUS, "entered akinatorGiveDefinition\n");
+    node_t * searched_node = treeFindNode(akinator->root, sample, akinatorCmpWcs);
+    if (searched_node == NULL){
+        logPrint(LOG_DEBUG_PLUS, "\tdid not find node\n");
+        wprintf(CANNOT_FIND_STR, sample);
+        return;
+    }
+    akinator->cur_node = searched_node;
+    wchar_t * pos_definition[MAX_DEFINITION_DEPTH] = {};
+    wchar_t * neg_definition[MAX_DEFINITION_DEPTH] = {};
+    size_t pos_def_count = 0;
+    size_t neg_def_count = 0;
+    while(akinator->cur_node->parent != NULL){
+        if (akinator->cur_node == akinator->cur_node->parent->left){
+            akinator->cur_node = akinator->cur_node->parent;
+            pos_definition[pos_def_count] = (wchar_t *)(akinator->cur_node->data);
+            logPrint(LOG_DEBUG_PLUS, "\tfound positive characteristic for node\n");
+            pos_def_count++;
+        }
+        else {
+            akinator->cur_node = akinator->cur_node->parent;
+            neg_definition[neg_def_count] = (wchar_t *)(akinator->cur_node->data);
+            logPrint(LOG_DEBUG_PLUS, "\tfound negative characteristic for node\n");
+            neg_def_count++;
+        }
+    }
+    wprintf(FORMAT_OF_DEFINITION, (wchar_t *)(searched_node->data));
+
+    size_t def_index = pos_def_count;
+    do {
+        def_index--;
+        wprintf(FORMAT_OF_POS_CHAR, pos_definition[def_index]);
+    } while (def_index != 0);
+
+    def_index = neg_def_count;
+    do {
+        def_index--;
+        wprintf(FORMAT_OF_NEG_CHAR, neg_definition[def_index]);
+    } while (def_index != 0);
+    wprintf(L"\n");
+
+    logPrint(LOG_DEBUG_PLUS, "exiting akinatorGiveDefinition\n");
+}
+
 void akinatorPtrToStr(wchar_t * str, void * str_ptr)
 {
-    wchar_t * akin_str = (wchar_t *) str_ptr;
+    wchar_t * akin_str = (wchar_t *)str_ptr;
     wcscpy(str, akin_str);
+}
+
+int akinatorCmpWcs(void * first_ptr, void * second_ptr)
+{
+    wchar_t *  first_wcs = (wchar_t *) first_ptr;
+    wchar_t * second_wcs = (wchar_t *)second_ptr;
+
+    return wcscasecmp(first_wcs, second_wcs);
 }
