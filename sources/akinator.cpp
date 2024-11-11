@@ -68,7 +68,7 @@ static bool answerIsYes()
 {
     while (1){
         wchar_t ans_buf[BUF_LEN] = L"";
-        wscanf(L"%s", ans_buf);
+        wscanf(L"%ls", ans_buf);
 
         if (wcscasecmp(ans_buf, YES_ANSWER) == 0){
             return true;

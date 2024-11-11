@@ -8,7 +8,9 @@
 
 int main()
 {
-    setlocale(LC_ALL, "RU");
+    setlocale(LC_ALL, "ru_RU.UTF-8");
+    wprintf(L"говно этот ваш wchar_t\n");
+
     system("mkdir -p logs/");
     logStart("logs/log.html", LOG_DEBUG_PLUS, LOG_HTML);
     logCancelBuffer();
