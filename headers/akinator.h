@@ -13,6 +13,13 @@ typedef struct
     elemtowcs_func_t dataToStr;
 } akinator_t;
 
+/// @brief enum with akinator possible modess
+typedef enum {
+    PLAY_MODE,
+    DEFINITION_MODE,
+    DIFF_MODE
+} akinator_mode_t;
+
 /// @brief constructs akinator structure
 void akinatorCtor(akinator_t * akinator, FILE * base_file);
 
@@ -37,6 +44,8 @@ int akinatorCmpWcs(void * first_ptr, void * second_ptr);
 /// @brief prints definition of object with the name sample
 void akinatorGiveDefinition(akinator_t * akinator, wchar_t * sample);
 
+/// @brief returns launching mode of akinator
+akinator_mode_t akinatorGetMode(akinator_t * akinator);
 
 const wchar_t * const FORMAT_TO_READ_STR           = L" %*l[\"]%l[^\"]%*l[\"] %l[^\n] ";
 const wchar_t * const FORMAT_TO_WRITE_STR          = L"\"%ls\"%ls\n";
@@ -60,6 +69,11 @@ const wchar_t * const FORMAT_OF_DEFINITION     = L"Определение %ls: "
 const wchar_t * const FORMAT_OF_POS_CHAR       = L"%ls, ";
 const wchar_t * const FORMAT_OF_NEG_CHAR       = L"не %ls, ";
 
+const wchar_t * const MODE_QUESTION             = L"В каком режиме хотите использовать акинатор (игра/опр/срав)?\n";
+const wchar_t * const BAD_MODE_ANSWER           = L"Нет такого режима, трай хардер\n";
+const wchar_t * const PLAY_MODE_ANSWER          = L"игра";
+const wchar_t * const DEFINITION_MODE_ANSWER    = L"опр";
+const wchar_t * const DIFF_MODE_ANSWER          = L"срав";
 
 const wchar_t * const YES_ANSWER = L"Y";
 const wchar_t * const  NO_ANSWER = L"N";

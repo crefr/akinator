@@ -6,6 +6,8 @@
 #include "akinator.h"
 #include "logger.h"
 
+const size_t STR_BUFFER_LEN = 64;
+
 int main()
 {
     setlocale(LC_ALL, "ru_RU.UTF-8");
@@ -22,9 +24,18 @@ int main()
 
     treeDumpGraphWcs(akinator.root, akinatorPtrToStr);
 
-    akinatorGiveDefinition(&akinator, L"хохлов");
-
-    // akinatorPlay(&akinator);
+    akinator_mode_t launch_mode = akinatorGetMode(&akinator);
+    switch (launch_mode){
+        case PLAY_MODE:
+            akinatorPlay(&akinator);
+            break;
+        case DEFINITION_MODE:
+            akinatorGiveDefinition(&akinator, L"овчос");
+            break;
+        default:
+            wprintf(L"не поддерживаю такой режим / его не существует\n");
+            break;
+    }
 
     treeDumpGraphWcs(akinator.root, akinatorPtrToStr);
 

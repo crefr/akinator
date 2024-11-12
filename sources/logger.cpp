@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <time.h>
+#include <wchar.h>
 
 #include "logger.h"
 
@@ -18,8 +19,8 @@ int logStart(const char * logfilename, enum loglevels loglevel, log_mode_t mode)
         return 0;
     }
     if (mode == LOG_HTML)
-        logPrint(LOG_RELEASE, "<pre>\n");
-    logPrint(LOG_RELEASE, "\n{-----------STARTED-----------}\n");
+        wlogPrint(LOG_RELEASE, L"<pre>\n");
+    //logPrint(LOG_RELEASE, "\n{-----------STARTED-----------}\n");
     return 1;
 }
 
@@ -31,6 +32,16 @@ void logPrint(enum loglevels loglevel, const char * fmt, ...)
         va_start(va, fmt);
         vfprintf(LOGfile, fmt, va);
         //fprintf(LOGfile, "\n");
+        va_end(va);
+    }
+}
+
+void wlogPrint(enum loglevels loglevel, const wchar_t * log_str, ...)
+{
+    if (loglevel <= LOGlevel){
+        va_list va = {};
+        va_start(va, log_str);
+        vfwprintf(LOGfile, log_str, va);
         va_end(va);
     }
 }
@@ -51,7 +62,7 @@ void logPrintTime(enum loglevels loglevel)
 
 void logExit()
 {
-    logPrint(LOG_RELEASE, "{-----------ENDING------------}\n");
+    //logPrint(LOG_RELEASE, "{-----------ENDING------------}\n");
     fclose(LOGfile);
 }
 
