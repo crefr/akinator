@@ -180,7 +180,7 @@ void akinatorGiveDefinition(akinator_t * akinator, wchar_t * sample)
     assert(akinator);
     assert(akinator->root);
     assert(sample);
-    wlogPrint(LOG_DEBUG_PLUS, L"entered akinatorGiveDefinition\n");
+    wlogPrint(LOG_DEBUG_PLUS, L"entered akinatorGiveDefinition str = \"%ls\"\n", sample);
     node_t * searched_node = treeFindNode(akinator->root, sample, akinatorCmpWcs);
     if (searched_node == NULL){
         wlogPrint(LOG_DEBUG_PLUS, L"\tdid not find node\n");
@@ -188,37 +188,37 @@ void akinatorGiveDefinition(akinator_t * akinator, wchar_t * sample)
         return;
     }
     akinator->cur_node = searched_node;
-    wchar_t * pos_definition[MAX_DEFINITION_DEPTH] = {};
+    wchar_t * definition[MAX_DEFINITION_DEPTH] = {};
     wchar_t * neg_definition[MAX_DEFINITION_DEPTH] = {};
-    size_t pos_def_count = 0;
+    size_t def_count = 0;
     size_t neg_def_count = 0;
     while(akinator->cur_node->parent != NULL){
-        if (akinator->cur_node == akinator->cur_node->parent->left){
-            akinator->cur_node = akinator->cur_node->parent;
-            pos_definition[pos_def_count] = (wchar_t *)(akinator->cur_node->data);
-            wlogPrint(LOG_DEBUG_PLUS, L"\tfound positive characteristic for node\n");
-            pos_def_count++;
-        }
-        else {
-            akinator->cur_node = akinator->cur_node->parent;
-            neg_definition[neg_def_count] = (wchar_t *)(akinator->cur_node->data);
-            wlogPrint(LOG_DEBUG_PLUS, L"\tfound negative characteristic for node\n");
+        definition[def_count] = (wchar_t *)(akinator->cur_node->parent->data);
+        wlogPrint(LOG_DEBUG_PLUS, L"\tfound characteristic for node (%ls)\n", definition[def_count]);
+
+        if (akinator->cur_node == akinator->cur_node->parent->right){
+            neg_definition[neg_def_count] = definition[def_count];
+            wlogPrint(LOG_DEBUG_PLUS, L"\t\tthis characteristic is negative (%ls)\n", definition[def_count]);
             neg_def_count++;
         }
+        def_count++;
+        akinator->cur_node = akinator->cur_node->parent;
     }
     wprintf(FORMAT_OF_DEFINITION, (wchar_t *)(searched_node->data));
-
-    size_t def_index = pos_def_count;
+    //wprintf(L"%zu\n", neg_def_count);
+    size_t def_index     = def_count;
+    ssize_t neg_def_index = neg_def_count - 1;
     do {
         def_index--;
-        wprintf(FORMAT_OF_POS_CHAR, pos_definition[def_index]);
+        if (neg_def_index >= 0 && definition[def_index] == neg_definition[neg_def_index]){
+            wprintf(L"не ");
+            neg_def_index--;
+        }
+        wprintf(FORMAT_OF_POS_CHAR, definition[def_index]);
+        if (def_index != 0)
+            wprintf(L", ");
     } while (def_index != 0);
 
-    def_index = neg_def_count;
-    do {
-        def_index--;
-        wprintf(FORMAT_OF_NEG_CHAR, neg_definition[def_index]);
-    } while (def_index != 0);
     wprintf(L"\n");
 
     wlogPrint(LOG_DEBUG_PLUS, L"exiting akinatorGiveDefinition\n");

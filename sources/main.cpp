@@ -15,7 +15,7 @@ int main()
 
     system("mkdir -p logs/");
     logStart("logs/log.html", LOG_DEBUG_PLUS, LOG_HTML);
-    logCancelBuffer();
+    // logCancelBuffer();
 
     FILE * base_file = fopen("base.txt", "r");
     akinator_t akinator = {};
@@ -26,15 +26,20 @@ int main()
 
     akinator_mode_t launch_mode = akinatorGetMode(&akinator);
     switch (launch_mode){
-        case PLAY_MODE:
+        case PLAY_MODE:{
             akinatorPlay(&akinator);
             break;
-        case DEFINITION_MODE:
-            akinatorGiveDefinition(&akinator, L"овчос");
+        }
+        case DEFINITION_MODE:{
+            wchar_t object_name[STR_BUFFER_LEN] = L"";
+            wscanf(L"%ls", object_name);
+            akinatorGiveDefinition(&akinator, object_name);
             break;
-        default:
+        }
+        default:{
             wprintf(L"не поддерживаю такой режим / его не существует\n");
             break;
+        }
     }
 
     treeDumpGraphWcs(akinator.root, akinatorPtrToStr);

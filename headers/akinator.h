@@ -66,7 +66,7 @@ const wchar_t * const LOSING_PHRASE            = L"Пожалуйста, вве�
 const wchar_t * const FORMAT_OF_DIFF_Q         = L"Чем %ls отличается от %ls. Он (она/оно) ...\n";
 const wchar_t * const CANNOT_FIND_STR          = L"Не смог найти объект \"%ls\"...\n";
 const wchar_t * const FORMAT_OF_DEFINITION     = L"Определение %ls: ";
-const wchar_t * const FORMAT_OF_POS_CHAR       = L"%ls, ";
+const wchar_t * const FORMAT_OF_POS_CHAR       = L"%ls";
 const wchar_t * const FORMAT_OF_NEG_CHAR       = L"не %ls, ";
 
 const wchar_t * const MODE_QUESTION             = L"В каком режиме хотите использовать акинатор (игра/опр/срав)?\n";
