@@ -27,13 +27,16 @@ int main()
     akinator_mode_t launch_mode = akinatorGetMode(&akinator);
     switch (launch_mode){
         case PLAY_MODE:{
+            printf("HELLO\n");
             akinatorPlay(&akinator);
             break;
         }
         case DEFINITION_MODE:{
             wchar_t object_name[STR_BUFFER_LEN] = L"";
             wscanf(L"%ls", object_name);
-            akinatorGiveDefinition(&akinator, object_name);
+            definition_t def = {};
+            akinatorGiveDefinition(&akinator, &def, object_name);
+            akinatorPrintDefinition(&def);
             break;
         }
         default:{

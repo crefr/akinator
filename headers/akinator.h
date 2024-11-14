@@ -2,16 +2,31 @@
 #define AKINATOR_INCLUDED
 
 #include <wchar.h>
+#include <stdbool.h>
 
 #include "bintree.h"
 
 /// @brief akinator structure itself
-typedef struct
-{
+typedef struct {
     node_t * root;
     node_t * cur_node;
     elemtowcs_func_t dataToStr;
 } akinator_t;
+
+
+/// @brief structure for one property of the definition
+typedef struct {
+    wchar_t * name;
+    bool is_positive;
+} property_t;
+
+const size_t MAX_DEFINITION_DEPTH = 128;
+
+/// @brief structure for definitions
+typedef struct {
+    property_t props[MAX_DEFINITION_DEPTH];
+    size_t num_of_props;
+} definition_t;
 
 /// @brief enum with akinator possible modess
 typedef enum {
@@ -41,8 +56,14 @@ void akinatorPtrToStr(wchar_t * str, void * str_ptr);
 /// @brief function to compare nodes data fields
 int akinatorCmpWcs(void * first_ptr, void * second_ptr);
 
-/// @brief prints definition of object with the name sample
-void akinatorGiveDefinition(akinator_t * akinator, wchar_t * sample);
+/// @brief makes definition for node
+definition_t akinatorMakeDefinition(akinator_t * akinator, node_t * node);
+
+/// @brief makes definition by the name of the object
+int akinatorGiveDefinition(akinator_t * akinator, definition_t * definition, wchar_t * sample);
+
+/// @brief prints definition to console
+void akinatorPrintDefinition(definition_t * definition);
 
 /// @brief returns launching mode of akinator
 akinator_mode_t akinatorGetMode(akinator_t * akinator);
@@ -66,8 +87,8 @@ const wchar_t * const LOSING_PHRASE            = L"Пожалуйста, вве�
 const wchar_t * const FORMAT_OF_DIFF_Q         = L"Чем %ls отличается от %ls. Он (она/оно) ...\n";
 const wchar_t * const CANNOT_FIND_STR          = L"Не смог найти объект \"%ls\"...\n";
 const wchar_t * const FORMAT_OF_DEFINITION     = L"Определение %ls: ";
-const wchar_t * const FORMAT_OF_POS_CHAR       = L"%ls";
-const wchar_t * const FORMAT_OF_NEG_CHAR       = L"не %ls, ";
+const wchar_t * const FORMAT_OF_POS_PROPERTY   = L"%ls";
+const wchar_t * const FORMAT_OF_NEG_PROPERTY   = L"не %ls";
 
 const wchar_t * const MODE_QUESTION             = L"В каком режиме хотите использовать акинатор (игра/опр/срав)?\n";
 const wchar_t * const BAD_MODE_ANSWER           = L"Нет такого режима, трай хардер\n";
@@ -77,7 +98,5 @@ const wchar_t * const DIFF_MODE_ANSWER          = L"срав";
 
 const wchar_t * const YES_ANSWER = L"Y";
 const wchar_t * const  NO_ANSWER = L"N";
-
-const size_t MAX_DEFINITION_DEPTH = 128;
 
 #endif

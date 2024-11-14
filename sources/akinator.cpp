@@ -20,10 +20,13 @@ void akinatorCtor(akinator_t * akinator, FILE * base_file)
 {
     assert(akinator);
     assert(base_file);
+
     wlogPrint(LOG_DEBUG_PLUS, L"akinator: constructing akinator...\n");
+
     akinator->root = akinatorReadFromFile(base_file, NULL);
     akinator->cur_node = akinator->root;
     akinator->dataToStr = akinatorPtrToStr;
+
     wlogPrint(LOG_DEBUG_PLUS, L"akinator: constructed akinator (root = %p, cur_node = %p, dataToStr = %p)\n",
             akinator->root, akinator->cur_node, akinator->dataToStr);
 }
@@ -31,6 +34,7 @@ void akinatorCtor(akinator_t * akinator, FILE * base_file)
 akinator_mode_t akinatorGetMode(akinator_t * akinator)
 {
     wprintf(MODE_QUESTION);
+
     while(1){
         wchar_t answer[BUF_LEN] = L"";
         wscanf(L"%ls", answer);
@@ -49,16 +53,20 @@ akinator_mode_t akinatorGetMode(akinator_t * akinator)
 void akinatorDtor(akinator_t * akinator)
 {
     assert(akinator);
+
     wlogPrint(LOG_DEBUG_PLUS, L"akinator: destructing akinator...\n");
+
     treeDestroy(akinator->root);
     akinator->root = NULL;
     akinator->cur_node = NULL;
+
     wlogPrint(LOG_DEBUG_PLUS, L"akinator: destructed akinator...\n");
 }
 
 void akinatorPlay(akinator_t * akinator)
 {
     assert(akinator);
+
     wlogPrint(LOG_DEBUG_PLUS, L"started playing akinator (root = %p, cur_node = %p)\n", akinator->root, akinator->cur_node);
 
     node_t * next_node = akinator->cur_node;
@@ -98,14 +106,17 @@ static bool answerIsYes()
 static void addNewElement(akinator_t * akinator)
 {
     wlogPrint(LOG_DEBUG_PLUS, L"akinator: adding new element into the tree\n");
+
     wchar_t new_elem_buf[BUF_LEN] = L"";
     wscanf(FORMAT_TO_READ_CONSOLE_STR, new_elem_buf);
+
     wlogPrint(LOG_DEBUG_PLUS, L"\tread %ls\n", new_elem_buf);
 
     wprintf(FORMAT_OF_DIFF_Q, new_elem_buf, (wchar_t *)(akinator->cur_node->data));
 
     wchar_t new_question_buf[BUF_LEN] = L"";
     wscanf(FORMAT_TO_READ_CONSOLE_STR, new_question_buf);
+
     wlogPrint(LOG_DEBUG_PLUS, L"\tdiff question %ls\n", new_question_buf);
 
     node_t * new_question_node = newNode(new_question_buf, BUF_LEN * (sizeof(wchar_t)));
@@ -122,13 +133,16 @@ static void addNewElement(akinator_t * akinator)
 
     akinator->cur_node->parent = new_question_node;
     new_element_node->parent   = new_question_node;
+
     wlogPrint(LOG_DEBUG_PLUS, L"akinator: added new element into the tree\n");
 }
 
 node_t * akinatorReadFromFile(FILE * base_file, node_t * parent)
 {
     assert(base_file);
+
     wlogPrint(LOG_DEBUG_PLUS, L"akinator: reading token (parent = %p)\n", parent);
+
     wchar_t      buffer[BUF_LEN] = L"";
     wchar_t type_buffer[BUF_LEN] = L"";
 
@@ -141,6 +155,7 @@ node_t * akinatorReadFromFile(FILE * base_file, node_t * parent)
     if (wcscmp(type_buffer, END_OF_QUESTION) == 0){
         wlogPrint(LOG_DEBUG_PLUS, L"\tadding left node to %p (str = \"%ls\")...\n", node, buffer);
         node->left  = akinatorReadFromFile(base_file, node);
+
         wlogPrint(LOG_DEBUG_PLUS, L"\tadding right node to %p (str = \"%ls\")...\n", node, buffer);
         node->right = akinatorReadFromFile(base_file, node);
     }
@@ -151,6 +166,7 @@ void akinatorDumpBaseToFile(akinator_t * akinator, FILE * base_file)
 {
     assert(akinator);
     assert(base_file);
+
     wlogPrint(LOG_DEBUG_PLUS, L"akinator: dumping to file...\n");
     dumpTreeToFile(akinator->root, base_file, akinator->dataToStr, 0);
     wlogPrint(LOG_DEBUG_PLUS, L"akinator: dumped to file\n");
@@ -160,10 +176,13 @@ static void dumpTreeToFile(node_t * root_node, FILE * base_file, elemtowcs_func_
 {
     assert(base_file);
     assert(dataToStr != NULL);
+
     for(size_t tab = 0; tab < tab_nums; tab++)
         fwprintf(base_file, L"\t");
+
     wchar_t str[BUF_LEN] = L"";
     dataToStr((wchar_t *)str, root_node->data);
+
     if (root_node->left != NULL || root_node->right != NULL)
         fwprintf(base_file, FORMAT_TO_WRITE_STR, str, END_OF_QUESTION);
     else
@@ -171,57 +190,92 @@ static void dumpTreeToFile(node_t * root_node, FILE * base_file, elemtowcs_func_
 
     if (root_node->left != NULL)
         dumpTreeToFile(root_node->left , base_file, dataToStr, tab_nums + 1);
+
     if (root_node->right != NULL)
         dumpTreeToFile(root_node->right, base_file, dataToStr, tab_nums + 1);
 }
 
-void akinatorGiveDefinition(akinator_t * akinator, wchar_t * sample)
+definition_t akinatorMakeDefinition(akinator_t * akinator, node_t * node)
 {
     assert(akinator);
     assert(akinator->root);
-    assert(sample);
-    wlogPrint(LOG_DEBUG_PLUS, L"entered akinatorGiveDefinition str = \"%ls\"\n", sample);
-    node_t * searched_node = treeFindNode(akinator->root, sample, akinatorCmpWcs);
-    if (searched_node == NULL){
-        wlogPrint(LOG_DEBUG_PLUS, L"\tdid not find node\n");
-        wprintf(CANNOT_FIND_STR, sample);
-        return;
-    }
-    akinator->cur_node = searched_node;
-    wchar_t * definition[MAX_DEFINITION_DEPTH] = {};
-    wchar_t * neg_definition[MAX_DEFINITION_DEPTH] = {};
+    assert(node);
+
+    wlogPrint(LOG_DEBUG_PLUS, L"entered akinatorMakeDefinition str = \"%ls\"\n", (wchar_t *)node->data);
+
+    definition_t definition = {};
     size_t def_count = 0;
-    size_t neg_def_count = 0;
+
+    akinator->cur_node = node;
+
     while(akinator->cur_node->parent != NULL){
-        definition[def_count] = (wchar_t *)(akinator->cur_node->parent->data);
-        wlogPrint(LOG_DEBUG_PLUS, L"\tfound characteristic for node (%ls)\n", definition[def_count]);
+        definition.props[def_count].name = (wchar_t *)(akinator->cur_node->parent->data);
+        wlogPrint(LOG_DEBUG_PLUS, L"\tfound characteristic for node (%ls)\n", definition.props[def_count].name);
 
         if (akinator->cur_node == akinator->cur_node->parent->right){
-            neg_definition[neg_def_count] = definition[def_count];
-            wlogPrint(LOG_DEBUG_PLUS, L"\t\tthis characteristic is negative (%ls)\n", definition[def_count]);
-            neg_def_count++;
+            definition.props[def_count].is_positive = false;
+
+            wlogPrint(LOG_DEBUG_PLUS, L"\t\tthis characteristic is negative (%ls)\n", definition.props[def_count].name);
+        }
+        else {
+            definition.props[def_count].is_positive = true;
+
+            wlogPrint(LOG_DEBUG_PLUS, L"\t\tthis characteristic is positive (%ls)\n", definition.props[def_count].name);
         }
         def_count++;
         akinator->cur_node = akinator->cur_node->parent;
     }
-    wprintf(FORMAT_OF_DEFINITION, (wchar_t *)(searched_node->data));
-    //wprintf(L"%zu\n", neg_def_count);
-    size_t def_index     = def_count;
-    ssize_t neg_def_index = neg_def_count - 1;
-    do {
-        def_index--;
-        if (neg_def_index >= 0 && definition[def_index] == neg_definition[neg_def_index]){
-            wprintf(L"не ");
-            neg_def_index--;
-        }
-        wprintf(FORMAT_OF_POS_CHAR, definition[def_index]);
-        if (def_index != 0)
-            wprintf(L", ");
-    } while (def_index != 0);
+    definition.num_of_props = def_count;
 
-    wprintf(L"\n");
+    wlogPrint(LOG_DEBUG_PLUS, L"found definition, exiting akinatorMakeDefinition str = \"%ls\"", (wchar_t *)node->data);
+
+    return definition;
+}
+
+
+int akinatorGiveDefinition(akinator_t * akinator, definition_t * definition, wchar_t * sample)
+{
+    assert(akinator);
+    assert(akinator->root);
+    assert(sample);
+
+    wlogPrint(LOG_DEBUG_PLUS, L"entered akinatorGiveDefinition str = \"%ls\"\n", sample);
+
+    node_t * searched_node = treeFindNode(akinator->root, sample, akinatorCmpWcs);
+
+    if (searched_node == NULL){
+        wlogPrint(LOG_DEBUG_PLUS, L"\tdid not find node\n");
+        return 1;
+    }
+
+    akinator->cur_node = searched_node;
+    *definition = akinatorMakeDefinition(akinator, searched_node);
 
     wlogPrint(LOG_DEBUG_PLUS, L"exiting akinatorGiveDefinition\n");
+
+    return 0;
+}
+
+void akinatorPrintDefinition(definition_t * definition)
+{
+    assert(definition);
+
+    wlogPrint(LOG_DEBUG_PLUS, L"printing definition...\n");
+
+    for (ssize_t prop_index = definition->num_of_props - 1; prop_index >= 0; prop_index--){
+        property_t prop = definition->props[prop_index];
+
+        if (prop.is_positive)
+            wprintf(FORMAT_OF_POS_PROPERTY, prop.name);
+        else
+            wprintf(FORMAT_OF_NEG_PROPERTY, prop.name);
+
+        if (prop_index != 0)
+            wprintf(L", ");
+    }
+    wprintf(L"\n");
+
+    wlogPrint(LOG_DEBUG_PLUS, L"printed definition\n");
 }
 
 void akinatorPtrToStr(wchar_t * str, void * str_ptr)
