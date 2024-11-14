@@ -3,6 +3,9 @@
 #include <assert.h>
 #include <locale.h>
 
+#include <sys/stat.h>
+#include <sys/types.h>
+
 #include "akinator.h"
 #include "logger.h"
 
@@ -13,7 +16,7 @@ int main()
     setlocale(LC_ALL, "ru_RU.UTF-8");
     wprintf(L"говно этот ваш wchar_t\n");
 
-    system("mkdir -p logs/");
+    mkdir("logs", S_IFDIR);
     logStart("logs/log.html", LOG_DEBUG_PLUS, LOG_HTML);
     // logCancelBuffer();
 
@@ -39,6 +42,22 @@ int main()
             akinatorPrintDefinition(&def);
             break;
         }
+        case DIFF_MODE:{
+            wchar_t  first_name[STR_BUFFER_LEN] = L"";
+            wchar_t second_name[STR_BUFFER_LEN] = L"";
+
+            wscanf(L"%ls",  first_name);
+            wscanf(L"%ls", second_name);
+
+            definition_t  first_def = {};
+            definition_t second_def = {};
+
+            akinatorGiveDefinition(&akinator,  &first_def,  first_name);
+            akinatorGiveDefinition(&akinator, &second_def, second_name);
+
+            akinatorPrintDifference(&first_def, &second_def);
+            break;
+        }
         default:{
             wprintf(L"не поддерживаю такой режим / его не существует\n");
             break;
@@ -48,7 +67,7 @@ int main()
     treeDumpGraphWcs(akinator.root, akinatorPtrToStr);
 
     base_file = fopen("base.txt", "w");
-    akinatorDumpBaseToFile(&akinator, base_file);
+    akinatorWriteBaseToFile(&akinator, base_file);
     fclose(base_file);
 
     akinatorDtor(&akinator);

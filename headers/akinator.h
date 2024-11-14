@@ -13,7 +13,6 @@ typedef struct {
     elemtowcs_func_t dataToStr;
 } akinator_t;
 
-
 /// @brief structure for one property of the definition
 typedef struct {
     wchar_t * name;
@@ -45,10 +44,10 @@ void akinatorDtor(akinator_t * akinator);
 void akinatorPlay(akinator_t * akinator);
 
 /// @brief reads akinator tree from file with database
-node_t * akinatorReadFromFile(FILE * base_file, node_t * parent);
+node_t * akinatorReadBaseFromFile(FILE * base_file, node_t * parent);
 
 /// @brief dumps base to file
-void akinatorDumpBaseToFile(akinator_t * akinator, FILE * base_file);
+void akinatorWriteBaseToFile(akinator_t * akinator, FILE * base_file);
 
 /// @brief function to print strings from tree right
 void akinatorPtrToStr(wchar_t * str, void * str_ptr);
@@ -64,6 +63,9 @@ int akinatorGiveDefinition(akinator_t * akinator, definition_t * definition, wch
 
 /// @brief prints definition to console
 void akinatorPrintDefinition(definition_t * definition);
+
+/// @brief prints difference between two definitions
+void akinatorPrintDifference(definition_t * first_def, definition_t * second_def);
 
 /// @brief returns launching mode of akinator
 akinator_mode_t akinatorGetMode(akinator_t * akinator);
@@ -81,14 +83,19 @@ const wchar_t * const END_OF_ANSWER     = L";";
 // const wchar_t * const LOSING_PHRASE      = L"Please type the object you guessed\n";
 // const wchar_t * const FORMAT_OF_DIFF_Q   = L"How is %ls differ from %ls. It is ...\n";
 
-const wchar_t * const FORMAT_OF_QUESTION       = L"Это %ls? (Y/N)\n";
-const wchar_t * const WINNING_PHRASE           = L"Ха! Опять угадал!\n";
-const wchar_t * const LOSING_PHRASE            = L"Пожалуйста, введите, что вы загадали\n";
-const wchar_t * const FORMAT_OF_DIFF_Q         = L"Чем %ls отличается от %ls. Он (она/оно) ...\n";
-const wchar_t * const CANNOT_FIND_STR          = L"Не смог найти объект \"%ls\"...\n";
-const wchar_t * const FORMAT_OF_DEFINITION     = L"Определение %ls: ";
-const wchar_t * const FORMAT_OF_POS_PROPERTY   = L"%ls";
-const wchar_t * const FORMAT_OF_NEG_PROPERTY   = L"не %ls";
+const wchar_t * const FORMAT_OF_QUESTION        = L"Это %ls? (Y/N)\n";
+const wchar_t * const WINNING_PHRASE            = L"Ха! Опять угадал!\n";
+const wchar_t * const LOSING_PHRASE             = L"Пожалуйста, введите, что вы загадали\n";
+const wchar_t * const FORMAT_OF_DIFF_Q          = L"Чем %ls отличается от %ls. Он (она/оно) ...\n";
+
+const wchar_t * const CANNOT_FIND_STR           = L"Не смог найти объект \"%ls\"...\n";
+const wchar_t * const FORMAT_OF_DEFINITION      = L"Определение %ls: ";
+const wchar_t * const FORMAT_OF_POS_PROPERTY    = L"%ls";
+const wchar_t * const FORMAT_OF_NEG_PROPERTY    = L"не %ls";
+
+const wchar_t * const COMMON_IN_DEFS_STR        = L"Эти объекты схожи тем, что они оба ";
+const wchar_t * const DIFFERENT_IN_DEFS_STR     = L"Эти объекты различаются тем, что ";
+const wchar_t * const DIFF_MEDIUM_PART_STR      = L"a ";
 
 const wchar_t * const MODE_QUESTION             = L"В каком режиме хотите использовать акинатор (игра/опр/срав)?\n";
 const wchar_t * const BAD_MODE_ANSWER           = L"Нет такого режима, трай хардер\n";

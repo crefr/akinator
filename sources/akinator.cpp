@@ -8,11 +8,17 @@
 #include "binTree.h"
 #include "logger.h"
 
+/// @brief dumps tree to file (used in akinatorWriteBaseToFile)
 static void dumpTreeToFile(node_t * root_node, FILE * base_file, elemtowcs_func_t dataToStr, size_t tab_nums);
 
+/// @brief reads boolean answer of user and returns true if it is positive
 static bool answerIsYes();
 
+/// @brief adds new element to the tree
 static void addNewElement(akinator_t * akinator);
+
+/// @brief prints property from definition
+static void printProperty(property_t * prop);
 
 const size_t BUF_LEN = 128;
 
@@ -23,7 +29,7 @@ void akinatorCtor(akinator_t * akinator, FILE * base_file)
 
     wlogPrint(LOG_DEBUG_PLUS, L"akinator: constructing akinator...\n");
 
-    akinator->root = akinatorReadFromFile(base_file, NULL);
+    akinator->root = akinatorReadBaseFromFile(base_file, NULL);
     akinator->cur_node = akinator->root;
     akinator->dataToStr = akinatorPtrToStr;
 
@@ -38,12 +44,16 @@ akinator_mode_t akinatorGetMode(akinator_t * akinator)
     while(1){
         wchar_t answer[BUF_LEN] = L"";
         wscanf(L"%ls", answer);
+
         if (wcscasecmp(PLAY_MODE_ANSWER, answer) == 0)
             return PLAY_MODE;
+
         if (wcscasecmp(DEFINITION_MODE_ANSWER, answer) == 0)
             return DEFINITION_MODE;
+
         if (wcscasecmp(DIFF_MODE_ANSWER, answer) == 0)
             return DIFF_MODE;
+
         else
             wprintf(BAD_MODE_ANSWER);
     }
@@ -137,7 +147,7 @@ static void addNewElement(akinator_t * akinator)
     wlogPrint(LOG_DEBUG_PLUS, L"akinator: added new element into the tree\n");
 }
 
-node_t * akinatorReadFromFile(FILE * base_file, node_t * parent)
+node_t * akinatorReadBaseFromFile(FILE * base_file, node_t * parent)
 {
     assert(base_file);
 
@@ -154,22 +164,24 @@ node_t * akinatorReadFromFile(FILE * base_file, node_t * parent)
 
     if (wcscmp(type_buffer, END_OF_QUESTION) == 0){
         wlogPrint(LOG_DEBUG_PLUS, L"\tadding left node to %p (str = \"%ls\")...\n", node, buffer);
-        node->left  = akinatorReadFromFile(base_file, node);
+        node->left  = akinatorReadBaseFromFile(base_file, node);
 
         wlogPrint(LOG_DEBUG_PLUS, L"\tadding right node to %p (str = \"%ls\")...\n", node, buffer);
-        node->right = akinatorReadFromFile(base_file, node);
+        node->right = akinatorReadBaseFromFile(base_file, node);
     }
     return node;
 }
 
-void akinatorDumpBaseToFile(akinator_t * akinator, FILE * base_file)
+void akinatorWriteBaseToFile(akinator_t * akinator, FILE * base_file)
 {
     assert(akinator);
     assert(base_file);
 
-    wlogPrint(LOG_DEBUG_PLUS, L"akinator: dumping to file...\n");
+    wlogPrint(LOG_DEBUG_PLUS, L"akinator: writing base to file...\n");
+
     dumpTreeToFile(akinator->root, base_file, akinator->dataToStr, 0);
-    wlogPrint(LOG_DEBUG_PLUS, L"akinator: dumped to file\n");
+
+    wlogPrint(LOG_DEBUG_PLUS, L"akinator: writed base to file\n");
 }
 
 static void dumpTreeToFile(node_t * root_node, FILE * base_file, elemtowcs_func_t dataToStr, size_t tab_nums)
@@ -278,14 +290,71 @@ void akinatorPrintDefinition(definition_t * definition)
     wlogPrint(LOG_DEBUG_PLUS, L"printed definition\n");
 }
 
+void akinatorPrintDifference(definition_t * first_def, definition_t * second_def)
+{
+    assert( first_def);
+    assert(second_def);
+
+    wlogPrint(LOG_DEBUG_PLUS, L"entered akinatorPrintDifference\n");
+
+    ssize_t  first_index =  first_def->num_of_props - 1;
+    ssize_t second_index = second_def->num_of_props - 1;
+
+    wlogPrint(LOG_DEBUG_PLUS, L"\tprinting commom properties...");
+
+    wprintf(COMMON_IN_DEFS_STR);
+    while (first_def->props[first_index].name        == second_def->props[second_index].name &&
+           first_def->props[first_index].is_positive == second_def->props[second_index].is_positive){
+
+        property_t prop = first_def->props[first_index];
+        printProperty(&prop);
+        wprintf(L", ");
+         first_index--;
+        second_index--;
+    }
+    wlogPrint(LOG_DEBUG_PLUS, L"\tprinting different properties...");
+
+    wprintf(DIFFERENT_IN_DEFS_STR);
+    wprintf(L"первый объект - "); // TODO: constants
+
+    for(;first_index >= 0; first_index--){
+        property_t prop = first_def->props[first_index];
+        printProperty(&prop);
+        wprintf(L", ");
+    }
+
+    wprintf(DIFF_MEDIUM_PART_STR);
+    wprintf(L"второй объект - "); // TODO: constants
+
+    for(;second_index >= 0; second_index--){
+        property_t prop = second_def->props[second_index];
+        printProperty(&prop);
+        wprintf(L", ");
+    }
+
+    wlogPrint(LOG_DEBUG_PLUS, L"quitting akinatorPrintDifference\n");
+}
+
+static void printProperty(property_t * prop)
+{
+    const wchar_t * format_of_property = (prop->is_positive) ? FORMAT_OF_POS_PROPERTY : FORMAT_OF_NEG_PROPERTY;
+    wprintf(format_of_property, prop->name);
+}
+
 void akinatorPtrToStr(wchar_t * str, void * str_ptr)
 {
+    assert(str);
+    assert(str_ptr);
+
     wchar_t * akin_str = (wchar_t *)str_ptr;
     swprintf(str, BUF_LEN,  L"%ls", akin_str);
 }
 
 int akinatorCmpWcs(void * first_ptr, void * second_ptr)
 {
+    assert( first_ptr);
+    assert(second_ptr);
+
     wchar_t *  first_wcs = (wchar_t *) first_ptr;
     wchar_t * second_wcs = (wchar_t *)second_ptr;
 
