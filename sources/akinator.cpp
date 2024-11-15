@@ -20,6 +20,12 @@ static void addNewElement(akinator_t * akinator);
 /// @brief prints property from definition
 static void printProperty(property_t * prop);
 
+/// @brief function to print strings from tree right
+static void akinatorPtrToStr(wchar_t * str, void * str_ptr);
+
+/// @brief function to compare nodes data fields
+static int akinatorCmpWcs(void * first_ptr, void * second_ptr);
+
 const size_t BUF_LEN = 128;
 
 void akinatorCtor(akinator_t * akinator, FILE * base_file)
@@ -276,7 +282,7 @@ void akinatorPrintDefinition(definition_t * definition)
 
     wlogPrint(LOG_DEBUG_PLUS, L"printing definition...\n");
 
-    for (ssize_t prop_index = definition->num_of_props - 1; prop_index >= 0; prop_index--){
+    for (ssize_t prop_index = (ssize_t)definition->num_of_props - 1; prop_index >= 0; prop_index--){
         property_t prop = definition->props[prop_index];
 
         if (prop.is_positive)
@@ -299,8 +305,8 @@ void akinatorPrintDifference(definition_t * first_def, definition_t * second_def
 
     wlogPrint(LOG_DEBUG_PLUS, L"entered akinatorPrintDifference\n");
 
-    ssize_t  first_index =  first_def->num_of_props - 1;
-    ssize_t second_index = second_def->num_of_props - 1;
+    ssize_t  first_index = (ssize_t) first_def->num_of_props - 1;
+    ssize_t second_index = (ssize_t)second_def->num_of_props - 1;
 
     wlogPrint(LOG_DEBUG_PLUS, L"\tprinting commom properties...");
 
@@ -337,13 +343,66 @@ void akinatorPrintDifference(definition_t * first_def, definition_t * second_def
     wlogPrint(LOG_DEBUG_PLUS, L"quitting akinatorPrintDifference\n");
 }
 
+void akinatorLaunch(akinator_t * akinator, akinator_mode_t launch_mode)
+{
+    switch (launch_mode){
+        case PLAY_MODE:{
+            akinatorPlay(akinator);
+            break;
+        }
+        case DEFINITION_MODE:{
+            wchar_t object_name[BUF_LEN] = L"";
+            wscanf(L"%ls", object_name);
+            definition_t def = {};
+            akinatorGiveDefinition(akinator, &def, object_name);
+            akinatorPrintDefinition(&def);
+            break;
+        }
+        case DIFF_MODE:{
+            wchar_t  first_name[BUF_LEN] = L"";
+            wchar_t second_name[BUF_LEN] = L"";
+
+            wscanf(L"%ls",  first_name);
+            wscanf(L"%ls", second_name);
+
+            definition_t  first_def = {};
+            definition_t second_def = {};
+
+            akinatorGiveDefinition(akinator,  &first_def,  first_name);
+            akinatorGiveDefinition(akinator, &second_def, second_name);
+
+            akinatorPrintDifference(&first_def, &second_def);
+            break;
+        }
+        default:{
+            wprintf(L"не поддерживаю такой режим / его не существует\n");
+            break;
+        }
+    }
+}
+
+void akinatorDump(akinator_t * akinator)
+{
+    wlogPrint(LOG_DEBUG, L"<h2>---------AKINATOR_DUMP---------</h2>");
+
+    wlogPrint(LOG_DEBUG, L"\troot      = %p\n", akinator->root);
+    wlogPrint(LOG_DEBUG, L"\tcur_node  = %p\n", akinator->cur_node);
+    wlogPrint(LOG_DEBUG, L"\tdataToStr = %p\n", akinator->dataToStr);
+
+    if (akinator->root != NULL)
+        treeDumpGraphWcs(akinator->root, akinatorPtrToStr);
+
+    wlogPrint(LOG_DEBUG, L"<h2>-------AKINATOR_DUMP_END-------</h2>");
+}
+
+
 static void printProperty(property_t * prop)
 {
     const wchar_t * format_of_property = (prop->is_positive) ? FORMAT_OF_POS_PROPERTY : FORMAT_OF_NEG_PROPERTY;
     wprintf(format_of_property, prop->name);
 }
 
-void akinatorPtrToStr(wchar_t * str, void * str_ptr)
+static void akinatorPtrToStr(wchar_t * str, void * str_ptr)
 {
     assert(str);
     assert(str_ptr);
@@ -352,7 +411,7 @@ void akinatorPtrToStr(wchar_t * str, void * str_ptr)
     swprintf(str, BUF_LEN,  L"%ls", akin_str);
 }
 
-int akinatorCmpWcs(void * first_ptr, void * second_ptr)
+static int akinatorCmpWcs(void * first_ptr, void * second_ptr)
 {
     assert( first_ptr);
     assert(second_ptr);

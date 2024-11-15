@@ -40,6 +40,12 @@ void akinatorCtor(akinator_t * akinator, FILE * base_file);
 /// @brief destructs akinator structure
 void akinatorDtor(akinator_t * akinator);
 
+/// @brief main akinator launching function
+void akinatorLaunch(akinator_t * akinator, akinator_mode_t launch_mode);
+
+/// @brief dumps akinator info to log file
+void akinatorDump(akinator_t * akinator);
+
 /// @brief launches guessing game
 void akinatorPlay(akinator_t * akinator);
 
@@ -48,12 +54,6 @@ node_t * akinatorReadBaseFromFile(FILE * base_file, node_t * parent);
 
 /// @brief dumps base to file
 void akinatorWriteBaseToFile(akinator_t * akinator, FILE * base_file);
-
-/// @brief function to print strings from tree right
-void akinatorPtrToStr(wchar_t * str, void * str_ptr);
-
-/// @brief function to compare nodes data fields
-int akinatorCmpWcs(void * first_ptr, void * second_ptr);
 
 /// @brief makes definition for node
 definition_t akinatorMakeDefinition(akinator_t * akinator, node_t * node);
