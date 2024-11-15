@@ -6,8 +6,11 @@
 
 #include "bintree.h"
 
+const size_t MAX_FILE_NAME_LEN = 128;
+
 /// @brief akinator structure itself
 typedef struct {
+    char base_file_name[MAX_FILE_NAME_LEN];
     node_t * root;
     node_t * cur_node;
     elemtowcs_func_t dataToStr;
@@ -36,7 +39,7 @@ typedef enum {
 } akinator_mode_t;
 
 /// @brief constructs akinator structure
-void akinatorCtor(akinator_t * akinator, FILE * base_file);
+void akinatorCtor(akinator_t * akinator, const char * base_file_name);
 
 /// @brief destructs akinator structure
 void akinatorDtor(akinator_t * akinator);

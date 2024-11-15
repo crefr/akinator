@@ -20,10 +20,10 @@ int main()
     logStart("logs/log.html", LOG_DEBUG_PLUS, LOG_HTML);
     //logCancelBuffer();
 
-    FILE * base_file = fopen("base.txt", "r");
+    const char * base_file_name = "base.txt";
+
     akinator_t akinator = {};
-    akinatorCtor(&akinator, base_file);
-    fclose(base_file);
+    akinatorCtor(&akinator, base_file_name);
 
     treeSetDumpMode(DUMP_MEDIUM);
     akinatorDump(&akinator);
@@ -32,10 +32,6 @@ int main()
     akinatorLaunch(&akinator, launch_mode);
 
     akinatorDump(&akinator);
-
-    base_file = fopen("base.txt", "w");
-    akinatorWriteBaseToFile(&akinator, base_file);
-    fclose(base_file);
 
     akinatorDtor(&akinator);
 

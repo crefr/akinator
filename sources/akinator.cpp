@@ -28,14 +28,19 @@ static int akinatorCmpWcs(void * first_ptr, void * second_ptr);
 
 const size_t BUF_LEN = 128;
 
-void akinatorCtor(akinator_t * akinator, FILE * base_file)
+void akinatorCtor(akinator_t * akinator, const char * base_file_name)
 {
     assert(akinator);
-    assert(base_file);
+    assert(base_file_name);
 
     wlogPrint(LOG_DEBUG_PLUS, L"akinator: constructing akinator...\n");
 
+    strcpy(akinator->base_file_name, base_file_name);
+
+    FILE * base_file = fopen(akinator->base_file_name, "r");
     akinator->root = akinatorReadBaseFromFile(base_file, NULL);
+    fclose(base_file);
+
     akinator->cur_node = akinator->root;
     akinator->dataToStr = akinatorPtrToStr;
 
@@ -393,6 +398,13 @@ void akinatorLaunch(akinator_t * akinator, akinator_mode_t launch_mode)
     switch (launch_mode){
         case PLAY_MODE:{
             akinatorPlay(akinator);
+
+            wprintf(SAVE_BASE_QUESTION);
+            if (answerIsYes()){
+                FILE * base_file = fopen(akinator->base_file_name, "w");
+                akinatorWriteBaseToFile(akinator, base_file);
+                fclose(base_file);
+            }
             break;
         }
         case DEFINITION_MODE:{
