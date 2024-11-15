@@ -226,6 +226,8 @@ definition_t akinatorMakeDefinition(akinator_t * akinator, node_t * node)
     definition_t definition = {};
     size_t def_count = 0;
 
+    definition.obj_name = (wchar_t *)node->data;
+
     akinator->cur_node = node;
 
     while(akinator->cur_node->parent != NULL){
@@ -247,7 +249,7 @@ definition_t akinatorMakeDefinition(akinator_t * akinator, node_t * node)
     }
     definition.num_of_props = def_count;
 
-    wlogPrint(LOG_DEBUG_PLUS, L"found definition, exiting akinatorMakeDefinition str = \"%ls\"", (wchar_t *)node->data);
+    wlogPrint(LOG_DEBUG_PLUS, L"found definition, exiting akinatorMakeDefinition str = \"%ls\"\n", definition.obj_name);
 
     return definition;
 }
@@ -280,7 +282,9 @@ void akinatorPrintDefinition(definition_t * definition)
 {
     assert(definition);
 
-    wlogPrint(LOG_DEBUG_PLUS, L"printing definition...\n");
+    wlogPrint(LOG_DEBUG_PLUS, L"printing definition (name = \"%ls\")...\n", definition->obj_name);
+
+    wprintf(FORMAT_OF_DEFINITION, definition->obj_name);
 
     for (ssize_t prop_index = (ssize_t)definition->num_of_props - 1; prop_index >= 0; prop_index--){
         property_t prop = definition->props[prop_index];
@@ -295,8 +299,30 @@ void akinatorPrintDefinition(definition_t * definition)
     }
     wprintf(L"\n");
 
-    wlogPrint(LOG_DEBUG_PLUS, L"printed definition\n");
+    wlogPrint(LOG_DEBUG_PLUS, L"printed definition (name = \"%ls\")\n", definition->obj_name);
 }
+
+definition_t akinatorGetDefinition(akinator_t * akinator)
+{
+    definition_t def = {};
+
+    wprintf(DEF_TEXT_REQUEST_STR);
+
+    bool def_is_given = false;
+    while (!def_is_given){
+        wchar_t def_text[BUF_LEN] = L"";
+
+        wscanf(FORMAT_TO_READ_CONSOLE_STR, def_text);
+
+        if (akinatorGiveDefinition(akinator, &def, def_text) == 0)
+            def_is_given = true;
+        else
+            wprintf(INCORRECT_DEF_NAME_STR, def_text);
+    }
+    return def;
+}
+
+static bool isPropsEqual(property_t prop1, property_t prop2);
 
 void akinatorPrintDifference(definition_t * first_def, definition_t * second_def)
 {
@@ -310,37 +336,56 @@ void akinatorPrintDifference(definition_t * first_def, definition_t * second_def
 
     wlogPrint(LOG_DEBUG_PLUS, L"\tprinting commom properties...");
 
-    wprintf(COMMON_IN_DEFS_STR);
-    while (first_def->props[first_index].name        == second_def->props[second_index].name &&
-           first_def->props[first_index].is_positive == second_def->props[second_index].is_positive){
+    if (!isPropsEqual(first_def->props[first_index], second_def->props[second_index]))
+        wprintf(NO_COMMON_IN_DEF_STR);
+    else
+        wprintf(COMMON_IN_DEFS_STR);
 
+    while (isPropsEqual(first_def->props[first_index], second_def->props[second_index])){
         property_t prop = first_def->props[first_index];
         printProperty(&prop);
+
         wprintf(L", ");
+
          first_index--;
         second_index--;
     }
+    wprintf(L"\n");
+
     wlogPrint(LOG_DEBUG_PLUS, L"\tprinting different properties...");
 
     wprintf(DIFFERENT_IN_DEFS_STR);
-    wprintf(L"первый объект - "); // TODO: constants
+    wprintf(L"\"%ls\" - ", first_def->obj_name);
 
     for(;first_index >= 0; first_index--){
         property_t prop = first_def->props[first_index];
         printProperty(&prop);
-        wprintf(L", ");
+
+        if (first_index != 0)
+            wprintf(L", ");
     }
 
     wprintf(DIFF_MEDIUM_PART_STR);
-    wprintf(L"второй объект - "); // TODO: constants
+    wprintf(L"\"%ls\" - ", second_def->obj_name);
 
     for(;second_index >= 0; second_index--){
         property_t prop = second_def->props[second_index];
         printProperty(&prop);
-        wprintf(L", ");
+
+        if (second_index != 0)
+            wprintf(L", ");
     }
+    wprintf(L"\n");
 
     wlogPrint(LOG_DEBUG_PLUS, L"quitting akinatorPrintDifference\n");
+}
+
+static bool isPropsEqual(property_t prop1, property_t prop2)
+{
+    bool names_are_equal = prop1.name        == prop2.name;
+    bool signs_are_equal = prop1.is_positive == prop2.is_positive;
+
+    return names_are_equal && signs_are_equal;
 }
 
 void akinatorLaunch(akinator_t * akinator, akinator_mode_t launch_mode)
@@ -351,25 +396,14 @@ void akinatorLaunch(akinator_t * akinator, akinator_mode_t launch_mode)
             break;
         }
         case DEFINITION_MODE:{
-            wchar_t object_name[BUF_LEN] = L"";
-            wscanf(L"%ls", object_name);
-            definition_t def = {};
-            akinatorGiveDefinition(akinator, &def, object_name);
+            definition_t def = akinatorGetDefinition(akinator);
             akinatorPrintDefinition(&def);
+
             break;
         }
         case DIFF_MODE:{
-            wchar_t  first_name[BUF_LEN] = L"";
-            wchar_t second_name[BUF_LEN] = L"";
-
-            wscanf(L"%ls",  first_name);
-            wscanf(L"%ls", second_name);
-
-            definition_t  first_def = {};
-            definition_t second_def = {};
-
-            akinatorGiveDefinition(akinator,  &first_def,  first_name);
-            akinatorGiveDefinition(akinator, &second_def, second_name);
+            definition_t  first_def = akinatorGetDefinition(akinator);
+            definition_t second_def = akinatorGetDefinition(akinator);
 
             akinatorPrintDifference(&first_def, &second_def);
             break;

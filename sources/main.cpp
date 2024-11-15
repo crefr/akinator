@@ -17,8 +17,8 @@ int main()
     wprintf(L"говно этот ваш wchar_t\n");
 
     mkdir("logs", S_IFDIR);
-    logStart("logs/log.html", LOG_DEBUG, LOG_HTML);
-    logCancelBuffer();
+    logStart("logs/log.html", LOG_DEBUG_PLUS, LOG_HTML);
+    //logCancelBuffer();
 
     FILE * base_file = fopen("base.txt", "r");
     akinator_t akinator = {};
