@@ -87,6 +87,7 @@ const wchar_t * const FORMAT_OF_QUESTION        = L"Это %ls? (Y/N)\n";
 const wchar_t * const WINNING_PHRASE            = L"Ха! Опять угадал!\n";
 const wchar_t * const LOSING_PHRASE             = L"Пожалуйста, введите, что вы загадали\n";
 const wchar_t * const FORMAT_OF_DIFF_Q          = L"Чем %ls отличается от %ls. Он (она/оно) ...\n";
+const wchar_t * const INCORRECT_YES_NO_ANS      = L"Y или N нажми пж\n";
 
 const wchar_t * const CANNOT_FIND_STR           = L"Не смог найти объект \"%ls\"...\n";
 const wchar_t * const FORMAT_OF_DEFINITION      = L"Определение %ls: ";

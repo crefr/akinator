@@ -104,12 +104,14 @@ static bool answerIsYes()
         wchar_t ans_buf[BUF_LEN] = L"";
         wscanf(L"%ls", ans_buf);
 
-        if (wcscasecmp(ans_buf, YES_ANSWER) == 0){
+        if (wcscasecmp(ans_buf, YES_ANSWER) == 0)
             return true;
-        }
-        if (wcscasecmp(ans_buf, NO_ANSWER) == 0){
+
+        if (wcscasecmp(ans_buf, NO_ANSWER) == 0)
             return false;
-        }
+
+        else
+            wprintf(INCORRECT_YES_NO_ANS);
     }
 }
 
