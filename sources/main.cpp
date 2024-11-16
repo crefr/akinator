@@ -14,7 +14,7 @@ const size_t STR_BUFFER_LEN = 64;
 int main()
 {
     setlocale(LC_ALL, "ru_RU.UTF-8");
-    wprintf(L"говно этот ваш wchar_t\n");
+    printf("говно этот ваш wchar_t\n");
 
     mkdir("logs", S_IFDIR);
     logStart("logs/log.html", LOG_DEBUG_PLUS, LOG_HTML);
