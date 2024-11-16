@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <wchar.h>
 
 #include "akinator.h"
 #include "binTree.h"
@@ -464,5 +465,11 @@ static int akinatorCmpStrs(void * first_ptr, void * second_ptr)
     const char *  first_str = (const char *) first_ptr;
     const char * second_str = (const char *)second_ptr;
 
-    return strcasecmp(first_str, second_str);
+    wchar_t  first_wcs[BUF_LEN] = L"";
+    wchar_t second_wcs[BUF_LEN] = L"";
+
+    mbstowcs( first_wcs,  first_str, BUF_LEN);
+    mbstowcs(second_wcs, second_str, BUF_LEN);
+
+    return wcscasecmp(first_wcs, second_wcs);
 }
