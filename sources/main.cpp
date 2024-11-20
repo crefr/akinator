@@ -8,6 +8,7 @@
 
 #include "akinator.h"
 #include "logger.h"
+#include "parser.h"
 
 const size_t STR_BUFFER_LEN = 64;
 

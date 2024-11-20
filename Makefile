@@ -3,10 +3,6 @@ OBJDIR 		   = Obj/
 SRCDIR 		   = sources/
 HEADDIR 	   = headers/
 
-BINTREEOBJDIR  = binTree/Obj/
-BINTREESRCDIR  = binTree/sources/
-BINTREEHEADDIR = binTree/headers/
-
 CC = g++
 BUILD  = RELEASE
 # windows
@@ -44,21 +40,17 @@ endif
 # CFLAGS_TEMP = $(CFLAGS)
 CFLAGS := -I./$(HEADDIR) -I./$(BINTREEHEADDIR) $(CFLAGS)
 
-ALLDEPS = $(BINTREEHEADDIR)bintree.h $(BINTREEHEADDIR)logger.h $(HEADDIR)akinator.h $(HEADDIR)logger.h
-OBJECTS    = main.o logger.o akinator.o
-BINTREEOBJ = bintree.o
+ALLDEPS = $(HEADDIR)akinator.h $(HEADDIR)logger.h $(HEADDIR)parser.h $(HEADDIR)bintree.h
+OBJECTS = main.o logger.o akinator.o
 OBJECTS_WITH_DIR 	 = $(addprefix $(OBJDIR),$(OBJECTS))
-BINTREE_OBJ_WITH_DIR = $(addprefix $(BINTREEOBJDIR),$(BINTREEOBJ))
 
-$(FILENAME): $(OBJECTS_WITH_DIR) $(BINTREE_OBJ_WITH_DIR)
+LIBS = binTree/Obj/bintree.a JSON_parser/Obj/parser.a
+
+$(FILENAME): $(OBJECTS_WITH_DIR) $(BINTREE_OBJ_WITH_DIR) $(LIBS)
 	$(CC) $(CFLAGS) $^ -o $@
 
 $(OBJECTS_WITH_DIR): $(OBJDIR)%.o: $(SRCDIR)%.cpp $(ALLDEPS)
 	mkdir -p $(OBJDIR)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(BINTREE_OBJ_WITH_DIR): $(BINTREEOBJDIR)%.o: $(BINTREESRCDIR)%.cpp $(ALLDEPS)
-	mkdir -p $(BINTREEOBJDIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:

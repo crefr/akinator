@@ -1,0 +1,27 @@
+{
+  "FORMAT_OF_QUESTION"        : "Это %s? (Y/N)\n",
+  "WINNING_PHRASE"            : "Ха! Опять угадал!\n",
+  "LOSING_PHRASE"             : "Пожалуйста, введите, что вы загадали\n",
+  "FORMAT_OF_DIFF_Q"          : "Чем %s отличается от %s. Он (она/оно) ...\n",
+  "INCORRECT_YES_NO_ANS"      : "Y или N нажми пж\n",
+
+  "DEF_TEXT_REQUEST_STR"      : "Введите название объекта: \n",
+  "CANNOT_FIND_STR"           : "Не смог найти объект '%s'...\n",
+  "FORMAT_OF_DEFINITION"      : "Определение %s: ",
+  "INCORRECT_DEF_NAME_STR"    : "Не получается дать определение объекта '%s' (его нет в базе), трай хардер\n",
+  "FORMAT_OF_POS_PROPERTY"    : "%s",
+  "FORMAT_OF_NEG_PROPERTY"    : "не %s",
+
+  "COMMON_IN_DEFS_STR"        : "Эти объекты схожи тем, что они оба ",
+  "NO_COMMON_IN_DEF_STR"      : "Эти объекты не имеют ничего общего.",
+  "DIFFERENT_IN_DEFS_STR"     : "Эти объекты различаются тем, что ",
+  "DIFF_MEDIUM_PART_STR"      : ",\na ",
+
+  "MODE_QUESTION"             : "В каком режиме хотите использовать акинатор (игра/опр/срав)?\n",
+  "BAD_MODE_ANSWER"           : "Нет такого режима, трай хардер\n",
+  "PLAY_MODE_ANSWER"          : "игра",
+  "DEFINITION_MODE_ANSWER"    : "опр",
+  "DIFF_MODE_ANSWER"          : "срав",
+
+  "SAVE_BASE_QUESTION"        : "Сохранить базу в файл? (Y/n)\n"
+}
