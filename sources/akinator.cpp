@@ -7,6 +7,14 @@
 #include "akinator.h"
 #include "binTree.h"
 #include "logger.h"
+#include "parser.h"
+
+#define DEF_STR_(arg)   \
+    static const char * arg = "";
+
+#include "strs_to_load.h"
+
+#undef DEF_STR_
 
 /// @brief dumps tree to file (used in akinatorWriteBaseToFile)
 static void dumpTreeToFile(node_t * root_node, FILE * base_file, elemtostr_func_t dataToStr, size_t tab_nums);
@@ -26,12 +34,20 @@ static void akinatorPtrToStr(char * str, void * str_ptr);
 /// @brief function to compare nodes data fields
 static int akinatorCmpStrs(void * first_ptr, void * second_ptr);
 
+static json_obj_t * loadConfig(akinator_t * akinator, FILE * config_file);
+
+static json_obj_t * config = NULL;
+
 const size_t BUF_LEN = 128;
 
 void akinatorCtor(akinator_t * akinator, const char * base_file_name)
 {
     assert(akinator);
     assert(base_file_name);
+
+    FILE * config_file = fopen("config.json", "r");
+    config = loadConfig(akinator, config_file);
+    fclose(config_file);
 
     logPrint(LOG_DEBUG_PLUS, "akinator: constructing akinator...\n");
 
@@ -80,6 +96,8 @@ void akinatorDtor(akinator_t * akinator)
     treeDestroy(akinator->root);
     akinator->root = NULL;
     akinator->cur_node = NULL;
+
+    jsonObjDtor(config);
 
     logPrint(LOG_DEBUG_PLUS, "akinator: destructed akinator...\n");
 }
@@ -426,6 +444,50 @@ void akinatorLaunch(akinator_t * akinator, akinator_mode_t launch_mode)
         }
     }
 }
+
+static char * formatStr(char * str)
+{
+    char * start_str = str;
+    char * ptr = str;
+    while (*ptr != '\0'){
+        if (*ptr == '\\'){
+            ptr++;
+            switch (*ptr){
+                case 'n':
+                    *str = '\n';
+                    break;
+                case '\"':
+                    *str = '\"';
+                    break;
+                default:
+                    *str = '\\';
+                    break;
+            }
+            ptr++;
+            str++;
+        }
+        else {
+            ptr++;
+            str++;
+        }
+    }
+    *str = '\0';
+    return start_str;
+}
+
+#define DEF_STR_(arg)                       \
+    arg = formatStr(findObject(config, #arg)->value);
+
+static json_obj_t * loadConfig(akinator_t * akinator, FILE * config_file)
+{
+    json_obj_t * config = parseJSON(config_file);
+
+    #include "strs_to_load.h"
+
+    return config;
+}
+
+#undef DEF_STR_
 
 void akinatorDump(akinator_t * akinator)
 {

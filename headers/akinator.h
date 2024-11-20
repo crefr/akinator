@@ -96,31 +96,31 @@ const char * const  NO_ANSWER = "N";
 // const char * const LOSING_PHRASE      = "Please type the object you guessed\n";
 // const char * const FORMAT_OF_DIFF_Q   = "How is %ls differ from %ls. It is ...\n";
 
-const char * const FORMAT_OF_QUESTION        = "Это %s? (Y/N)\n";
-const char * const WINNING_PHRASE            = "Ха! Опять угадал!\n";
-const char * const LOSING_PHRASE             = "Пожалуйста, введите, что вы загадали\n";
-const char * const FORMAT_OF_DIFF_Q          = "Чем %s отличается от %s. Он (она/оно) ...\n";
-const char * const INCORRECT_YES_NO_ANS      = "Y или N нажми пж\n";
-
-const char * const DEF_TEXT_REQUEST_STR      = "Введите название объекта: \n";
-const char * const CANNOT_FIND_STR           = "Не смог найти объект \"%s\"...\n";
-const char * const FORMAT_OF_DEFINITION      = "Определение %s: ";
-const char * const INCORRECT_DEF_NAME_STR    = "Не получается дать определение объекта \"%s\" (его нет в базе), трай хардер\n";
-const char * const FORMAT_OF_POS_PROPERTY    = "%s";
-const char * const FORMAT_OF_NEG_PROPERTY    = "не %s";
-
-const char * const COMMON_IN_DEFS_STR        = "Эти объекты схожи тем, что они оба ";
-const char * const NO_COMMON_IN_DEF_STR      = "Эти объекты не имеют ничего общего.";
-const char * const DIFFERENT_IN_DEFS_STR     = "Эти объекты различаются тем, что ";
-const char * const DIFF_MEDIUM_PART_STR      = ",\na ";
-
-const char * const MODE_QUESTION             = "В каком режиме хотите использовать акинатор (игра/опр/срав)?\n";
-const char * const BAD_MODE_ANSWER           = "Нет такого режима, трай хардер\n";
-const char * const PLAY_MODE_ANSWER          = "игра";
-const char * const DEFINITION_MODE_ANSWER    = "опр";
-const char * const DIFF_MODE_ANSWER          = "срав";
-
-const char * const SAVE_BASE_QUESTION        = "Сохранить базу в файл? (Y/n)\n";
+// const char * const FORMAT_OF_QUESTION        = "Это %s? (Y/N)\n";
+// const char * const WINNING_PHRASE            = "Ха! Опять угадал!\n";
+// const char * const LOSING_PHRASE             = "Пожалуйста, введите, что вы загадали\n";
+// const char * const FORMAT_OF_DIFF_Q          = "Чем %s отличается от %s. Он (она/оно) ...\n";
+// const char * const INCORRECT_YES_NO_ANS      = "Y или N нажми пж\n";
+//
+// const char * const DEF_TEXT_REQUEST_STR      = "Введите название объекта: \n";
+// const char * const CANNOT_FIND_STR           = "Не смог найти объект \"%s\"...\n";
+// const char * const FORMAT_OF_DEFINITION      = "Определение %s: ";
+// const char * const INCORRECT_DEF_NAME_STR    = "Не получается дать определение объекта \"%s\" (его нет в базе), трай хардер\n";
+// const char * const FORMAT_OF_POS_PROPERTY    = "%s";
+// const char * const FORMAT_OF_NEG_PROPERTY    = "не %s";
+//
+// const char * const COMMON_IN_DEFS_STR        = "Эти объекты схожи тем, что они оба ";
+// const char * const NO_COMMON_IN_DEF_STR      = "Эти объекты не имеют ничего общего.";
+// const char * const DIFFERENT_IN_DEFS_STR     = "Эти объекты различаются тем, что ";
+// const char * const DIFF_MEDIUM_PART_STR      = ",\na ";
+//
+// const char * const MODE_QUESTION             = "В каком режиме хотите использовать акинатор (игра/опр/срав)?\n";
+// const char * const BAD_MODE_ANSWER           = "Нет такого режима, трай хардер\n";
+// const char * const PLAY_MODE_ANSWER          = "игра";
+// const char * const DEFINITION_MODE_ANSWER    = "опр";
+// const char * const DIFF_MODE_ANSWER          = "срав";
+//
+// const char * const SAVE_BASE_QUESTION        = "Сохранить базу в файл? (Y/n)\n";
 /*----------------------------------------------------------------------*/
 
 #endif
