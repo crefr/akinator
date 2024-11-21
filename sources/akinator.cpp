@@ -445,38 +445,8 @@ void akinatorLaunch(akinator_t * akinator, akinator_mode_t launch_mode)
     }
 }
 
-static char * formatStr(char * str)
-{
-    char * start_str = str;
-    char * ptr = str;
-    while (*ptr != '\0'){
-        if (*ptr == '\\'){
-            ptr++;
-            switch (*ptr){
-                case 'n':
-                    *str = '\n';
-                    break;
-                case '\"':
-                    *str = '\"';
-                    break;
-                default:
-                    *str = '\\';
-                    break;
-            }
-            ptr++;
-            str++;
-        }
-        else {
-            ptr++;
-            str++;
-        }
-    }
-    *str = '\0';
-    return start_str;
-}
-
 #define DEF_STR_(arg)                       \
-    arg = formatStr(findObject(config, #arg)->value);
+    arg = findObject(config, #arg)->value;
 
 static json_obj_t * loadConfig(akinator_t * akinator, FILE * config_file)
 {
