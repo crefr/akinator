@@ -3,3 +3,4 @@
 	url = https://github.com/crefr/binTree.git
 [submodule "JSON_parser"]
 	path = JSON_parser
+	url = https://github.com/crefr/JSON_parser.git
